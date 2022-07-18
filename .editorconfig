@@ -1,0 +1,14 @@
+root = true
+
+[*]
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+[*.{cpp,hpp}]
+indent_style = space
+indent_size = 2
+
+[.clang-{format,tidy}]
+indent_style = space
+indent_size = 2
