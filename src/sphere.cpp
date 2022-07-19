@@ -15,9 +15,9 @@ rt::sphere::hit(const ray& r, double t_min, double t_max) const {
   double sqrtd = std::sqrt(discriminant);
 
   double root = (-half_b - sqrtd) / a;
-  if (t_min < root || root > t_max) {
+  if (t_min > root || root > t_max) {
     root = (-half_b + sqrtd) / a;
-    if (t_min < root || root > t_max) {
+    if (t_min > root || root > t_max) {
       return std::nullopt;
     }
   }
