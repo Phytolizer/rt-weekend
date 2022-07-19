@@ -26,4 +26,14 @@ inline double random_double() {
   return random_double(0, 1);
 }
 
+template <typename T> constexpr T clamp(T x, T min, T max) {
+  if (x < min) {
+    return min;
+  }
+  if (x > max) {
+    return max;
+  }
+  return x;
+}
+
 } // namespace rt

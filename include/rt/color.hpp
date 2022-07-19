@@ -18,9 +18,9 @@ write_color(std::ostream& os, const color& pixel_color, int samples_per_pixel) {
   g *= scale;
   b *= scale;
 
-  os << static_cast<int>(FULL * std::clamp(r, 0.0, ALMOST_ONE)) << ' '
-     << static_cast<int>(FULL * std::clamp(g, 0.0, ALMOST_ONE)) << ' '
-     << static_cast<int>(FULL * std::clamp(b, 0.0, ALMOST_ONE)) << '\n';
+  os << static_cast<int>(FULL * clamp(r, 0.0, ALMOST_ONE)) << ' '
+     << static_cast<int>(FULL * clamp(g, 0.0, ALMOST_ONE)) << ' '
+     << static_cast<int>(FULL * clamp(b, 0.0, ALMOST_ONE)) << '\n';
 }
 
 } // namespace rt
