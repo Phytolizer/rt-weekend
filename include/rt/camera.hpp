@@ -29,7 +29,7 @@ public:
   [[nodiscard]] constexpr ray get_ray(double u, double v) const {
     return {
         m_origin,
-        m_lower_left_corner + u * m_horizontal + v * m_vertical,
+        m_lower_left_corner + u * m_horizontal + v * m_vertical - m_origin,
     };
   }
 };
