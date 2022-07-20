@@ -132,4 +132,8 @@ inline vec3 unit_vector(const vec3& v) {
   return v / v.length();
 }
 
+inline vec3 random_unit_vector() {
+  return unit_vector(vec3::random_in_unit_sphere());
+}
+
 } // namespace rt
