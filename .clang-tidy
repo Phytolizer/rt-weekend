@@ -23,6 +23,7 @@ Checks: |
   -readability-non-const-parameter,
   -modernize-avoid-c-arrays,
   -misc-non-private-member-variables-in-classes,
+  -misc-no-recursion,
 WarningsAsErrors: ""
 CheckOptions:
   - key: "bugprone-argument-comment.StrictMode"

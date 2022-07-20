@@ -10,13 +10,19 @@
 #include <cstdint>
 #include <iostream>
 
-rt::color ray_color(const rt::ray& r, const rt::hittable& world) {
+rt::color
+ray_color(const rt::ray& r, const rt::hittable& world, std::size_t depth) {
   constexpr rt::color white{1.0, 1.0, 1.0};
   constexpr rt::color sky_blue{0.5, 0.7, 1.0};
 
+  if (depth == 0) {
+    return rt::color{0.0, 0.0, 0.0};
+  }
+
   if (auto rec = world.hit(r, 0, rt::INFINITE); rec) {
-    constexpr double damp_factor = 0.5;
-    return damp_factor * (rec->normal + white);
+    rt::point3 target =
+        rec->p + rec->normal + rt::vec3::random_in_unit_sphere();
+    return ray_color(rt::ray{rec->p, target - rec->p}, world, depth - 1) / 2;
   }
 
   constexpr double half_pixel = 0.5;
@@ -33,6 +39,7 @@ int main() {
   constexpr int image_height = static_cast<int>(image_width / aspect);
   constexpr const char progress_msg[] = "Scanlines remaining: ";
   constexpr int samples_per_pixel = 100;
+  constexpr std::size_t max_depth = 50;
 
   // Camera
   rt::camera cam;
@@ -66,7 +73,7 @@ int main() {
         auto u = (i + rt::random_double()) / (image_width - 1);
         auto v = (j + rt::random_double()) / (image_height - 1);
         rt::ray r = cam.get_ray(u, v);
-        pixel_color += ray_color(r, world);
+        pixel_color += ray_color(r, world, max_depth);
       }
       rt::write_color(std::cout, pixel_color, samples_per_pixel);
     }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "weekend.hpp"
+
 #include <cmath>
 #include <ostream>
 
@@ -59,6 +61,26 @@ public:
 
   [[nodiscard]] constexpr double length_squared() const {
     return m_e[0] * m_e[0] + m_e[1] * m_e[1] + m_e[2] * m_e[2];
+  }
+
+  [[nodiscard]] static inline vec3 random() {
+    return {random_double(), random_double(), random_double()};
+  }
+
+  [[nodiscard]] static inline vec3 random(double min, double max) {
+    return {
+        random_double(min, max),
+        random_double(min, max),
+        random_double(min, max),
+    };
+  }
+
+  [[nodiscard]] static inline vec3 random_in_unit_sphere() {
+    vec3 p;
+    do {
+      p = vec3::random(-1, 1);
+    } while (p.length_squared() > 1);
+    return p;
   }
 };
 
