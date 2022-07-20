@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/weekend
+weekend.so
+weekend.dylib
+weekend.dll
+weekend.a
+weekend.lib
+weekend-test-*
+*.exe
+*.o
+*.obj
+*.lst
+*.ppm

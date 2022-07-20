@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"kyle"
+	],
+	"copyright": "Copyright © 2022, kyle",
+	"description": "A minimal D application.",
+	"license": "MIT",
+	"name": "weekend"
+}
