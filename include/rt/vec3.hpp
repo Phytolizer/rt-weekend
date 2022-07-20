@@ -82,6 +82,11 @@ public:
     } while (p.length_squared() > 1);
     return p;
   }
+
+  [[nodiscard]] constexpr bool near_zero() const {
+    constexpr double s = 1e-8;
+    return std::abs(m_e[0]) < s && std::abs(m_e[1]) < s && std::abs(m_e[2]) < s;
+  }
 };
 
 using point3 = vec3;
@@ -134,6 +139,10 @@ inline vec3 unit_vector(const vec3& v) {
 
 inline vec3 random_unit_vector() {
   return unit_vector(vec3::random_in_unit_sphere());
+}
+
+constexpr vec3 reflect(const vec3& v, const vec3& n) {
+  return v - 2 * dot(v, n) * n;
 }
 
 } // namespace rt

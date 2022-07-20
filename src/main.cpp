@@ -2,6 +2,9 @@
 #include "rt/color.hpp"
 #include "rt/hittable.hpp"
 #include "rt/hittable_list.hpp"
+#include "rt/lambertian.hpp"
+#include "rt/material.hpp"
+#include "rt/metal.hpp"
 #include "rt/ray.hpp"
 #include "rt/sphere.hpp"
 #include "rt/vec3.hpp"
@@ -21,9 +24,12 @@ ray_color(const rt::ray& r, const rt::hittable& world, std::size_t depth) {
 
   constexpr double min_distance = 0.001;
   if (auto rec = world.hit(r, min_distance, rt::INFINITE); rec) {
-    rt::point3 target =
-        rec->p + rec->normal + rt::random_unit_vector();
-    return ray_color(rt::ray{rec->p, target - rec->p}, world, depth - 1) / 2;
+    if (auto scatter = rec->mat_ptr->scatter(r, *rec); scatter) {
+      return scatter->attenuation *
+          ray_color(scatter->scattered, world, depth - 1);
+    }
+
+    return rt::color{0, 0, 0};
   }
 
   constexpr double half_pixel = 0.5;
@@ -47,19 +53,23 @@ int main() {
 
   // World
   rt::hittable_list world;
-  constexpr std::array sphere_positions{
-      rt::point3{0, 0, -1},
-      rt::point3{0, -100.5, -1},
-  };
-  constexpr std::array sphere_radii{
-      0.5,
-      100.0,
-  };
-  static_assert(sphere_positions.size() == sphere_radii.size());
-  for (std::size_t i = 0; i < sphere_positions.size(); ++i) {
-    world.add(
-        std::make_unique<rt::sphere>(sphere_positions[i], sphere_radii[i]));
-  }
+  constexpr rt::color ground_color{0.8, 0.8, 0.0};
+  auto material_ground = std::make_shared<rt::lambertian>(ground_color);
+  constexpr rt::color center_color{0.7, 0.3, 0.3};
+  auto material_center = std::make_shared<rt::lambertian>(center_color);
+  constexpr rt::color left_color{0.8, 0.8, 0.8};
+  auto material_left = std::make_shared<rt::metal>(left_color);
+  constexpr rt::color right_color{0.8, 0.6, 0.2};
+  auto material_right = std::make_shared<rt::metal>(right_color);
+
+  world.add(std::make_unique<rt::sphere>(
+      rt::point3{0.0, -100.5, -1.0}, 100.0, material_ground));
+  world.add(std::make_unique<rt::sphere>(
+      rt::point3{0.0, 0.0, -1.0}, 0.5, material_center));
+  world.add(std::make_unique<rt::sphere>(
+      rt::point3{-1.0, 0.0, -1.0}, 0.5, material_left));
+  world.add(std::make_unique<rt::sphere>(
+      rt::point3{1.0, 0.0, -1.0}, 0.5, material_right));
 
   std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
