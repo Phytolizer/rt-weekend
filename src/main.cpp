@@ -19,7 +19,8 @@ ray_color(const rt::ray& r, const rt::hittable& world, std::size_t depth) {
     return rt::color{0.0, 0.0, 0.0};
   }
 
-  if (auto rec = world.hit(r, 0, rt::INFINITE); rec) {
+  constexpr double min_distance = 0.001;
+  if (auto rec = world.hit(r, min_distance, rt::INFINITE); rec) {
     rt::point3 target =
         rec->p + rec->normal + rt::vec3::random_in_unit_sphere();
     return ray_color(rt::ray{rec->p, target - rec->p}, world, depth - 1) / 2;
