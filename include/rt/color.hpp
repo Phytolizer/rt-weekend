@@ -14,9 +14,9 @@ write_color(std::ostream& os, const color& pixel_color, int samples_per_pixel) {
   double b = pixel_color.z();
 
   double scale = 1.0 / samples_per_pixel;
-  r *= scale;
-  g *= scale;
-  b *= scale;
+  r = std::sqrt(scale * r);
+  g = std::sqrt(scale * g);
+  b = std::sqrt(scale * b);
 
   os << static_cast<int>(FULL * clamp(r, 0.0, ALMOST_ONE)) << ' '
      << static_cast<int>(FULL * clamp(g, 0.0, ALMOST_ONE)) << ' '
