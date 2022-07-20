@@ -16,6 +16,11 @@ class Vec3
         e = [x, y, z];
     }
 
+    this(const Vec3 other)
+    {
+        this(other.x(), other.y(), other.z());
+    }
+
     double x() const
     {
         return e[0];
@@ -46,7 +51,7 @@ class Vec3
         return e[i];
     }
 
-    ref Vec3 opOpAssign(string op : "+")(const ref Vec3 v)
+    ref Vec3 opOpAssign(string op : "+")(const Vec3 v)
     {
         e[0] += v.e[0];
         e[1] += v.e[1];
@@ -82,17 +87,17 @@ class Vec3
         return format("%f %f %f", e[0], e[1], e[2]);
     }
 
-    Vec3 opBinary(string op : "+")(const ref Vec3 v) const
+    Vec3 opBinary(string op : "+")(const Vec3 v) const
     {
         return new Vec3(e[0] + v.e[0], e[1] + v.e[1], e[2] + v.e[2]);
     }
 
-    Vec3 opBinary(string op : "-")(const ref Vec3 v) const
+    Vec3 opBinary(string op : "-")(const Vec3 v) const
     {
         return new Vec3(e[0] - v.e[0], e[1] - v.e[1], e[2] - v.e[2]);
     }
 
-    Vec3 opBinary(string op : "*")(const ref Vec3 v) const
+    Vec3 opBinary(string op : "*")(const Vec3 v) const
     {
         return new Vec3(e[0] * v.e[0], e[1] * v.e[1], e[2] * v.e[2]);
     }
@@ -112,12 +117,12 @@ class Vec3
         return new Vec3(e[0] / t, e[1] / t, e[2] / t);
     }
 
-    double dot(const ref Vec3 v) const
+    double dot(const Vec3 v) const
     {
         return e[0] * v.e[0] + e[1] * v.e[1] + e[2] * v.e[2];
     }
 
-    Vec3 cross(const ref Vec3 v) const
+    Vec3 cross(const Vec3 v) const
     {
         return new Vec3(
             e[1] * v.e[2] - e[2] * v.e[1],
