@@ -23,18 +23,24 @@ const VERTICAL: Vec3 = Vec3::new(0.0, VIEWPORT_HEIGHT, 0.0);
 const PROGRESS_MESSAGE: &str = "Scanlines remaining: ";
 const PROGRESS_MSG_SIZE: usize = PROGRESS_MESSAGE.len() + 1;
 
-fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> bool {
+fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
     let oc = *r.origin() - *center;
     let a = dot(r.direction(), r.direction());
     let b = 2.0 * dot(&oc, r.direction());
     let c = dot(&oc, &oc) - radius * radius;
     let discriminant = b * b - 4.0 * a * c;
-    discriminant > 0.0
+    if discriminant < 0.0 {
+        -1.0
+    } else {
+        (-b - discriminant.sqrt()) / (2.0 * a)
+    }
 }
 
 fn ray_color(r: &Ray) -> Color {
-    if hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, r) {
-        return Color::new(1.0, 0.0, 0.0);
+    let t = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, r);
+    if t > 0.0 {
+        let n = (r.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
+        return 0.5 * Color::new(n.x() + 1.0, n.y() + 1.0, n.z() + 1.0);
     }
     let unit_direction = r.direction().unit_vector();
     let t = 0.5 * (unit_direction.y() + 1.0);
