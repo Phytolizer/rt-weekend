@@ -125,7 +125,7 @@ impl Div<f64> for Vec3 {
 }
 
 impl Vec3 {
-    pub(crate) fn new(x: f64, y: f64, z: f64) -> Self {
+    pub(crate) const fn new(x: f64, y: f64, z: f64) -> Self {
         Self { e: [x, y, z] }
     }
 
