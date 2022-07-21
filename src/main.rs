@@ -1,4 +1,9 @@
-use std::io::{stderr, Write};
+use std::io::{stderr, stdout, Write};
+
+use crate::{color::write_color, vec3::Color};
+
+mod color;
+mod vec3;
 
 const IMAGE_WIDTH: usize = 256;
 const IMAGE_HEIGHT: usize = 256;
@@ -15,15 +20,12 @@ fn main() {
         eprint!("\x1b[?25l\x1b[{PROGRESS_MSG_SIZE}G\x1b[K{j}\x1b[?25h");
         stderr().flush().unwrap();
         for i in 0..IMAGE_WIDTH {
-            let r = (i as f64) / ((IMAGE_WIDTH - 1) as f64);
-            let g = (j as f64) / ((IMAGE_HEIGHT - 1) as f64);
-            let b = 0.25;
-
-            let ir = (255.999 * r) as u8;
-            let ig = (255.999 * g) as u8;
-            let ib = (255.999 * b) as u8;
-
-            println!("{ir} {ig} {ib}");
+            let pixel_color = Color::new(
+                (i as f64) / ((IMAGE_WIDTH - 1) as f64),
+                (j as f64) / ((IMAGE_HEIGHT - 1) as f64),
+                0.25,
+            );
+            write_color(&mut stdout(), &pixel_color).unwrap();
         }
     }
 
