@@ -16,7 +16,7 @@ proc rayColor(r: Ray, world: Hittable, depth: int): Color =
   if depth == 0:
     return newColor(0, 0, 0)
 
-  let rec = world.hit(r, 0, Infinity)
+  let rec = world.hit(r, 0.001, Infinity)
   if rec.isSome:
     let target = rec.get.p + rec.get.normal + vec3.randomInUnitSphere()
     return 0.5 * rayColor(
