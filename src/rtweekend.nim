@@ -1,3 +1,4 @@
+import rtweekendpkg/camera
 import rtweekendpkg/color
 import rtweekendpkg/hittable
 import rtweekendpkg/hittableList
@@ -26,21 +27,15 @@ proc main =
   const AspectRatio = 16.0 / 9.0
   const ImageWidth = 400
   const ImageHeight = (ImageWidth / AspectRatio).int
-
-  const ViewportHeight = 2.0
-  const ViewportWidth = AspectRatio * ViewportHeight
-  const FocalLength = 1.0
-
-  const Origin = newPoint3(0, 0, 0)
-  const Horizontal = newVec3(ViewportWidth, 0, 0)
-  const Vertical = newVec3(0, ViewportHeight, 0)
-  const LowerLeftCorner = Origin - Horizontal / 2 - Vertical / 2 - newVec3(0, 0, FocalLength)
+  const SamplesPerPixel = 100
 
   const StatusMessage = "Scanlines remaining: "
 
   var world = newHittableList()
   world.add(newSphere(newPoint3(0, 0, -1), 0.5))
   world.add(newSphere(newPoint3(0, -100.5, -1), 100))
+
+  let cam = newCamera()
 
   f.writeLine("P3")
   f.writeLine(fmt"{ImageWidth} {ImageHeight}")
@@ -54,11 +49,13 @@ proc main =
     ))
     stderr.flushFile()
     for i in 0..<ImageWidth:
-      let u = i.float / (ImageWidth - 1)
-      let v = j.float / (ImageHeight - 1)
-      let r = newRay(Origin, LowerLeftCorner + u * Horizontal + v * Vertical - Origin)
-      let pixelColor = rayColor(r, world)
-      f.writeColor(pixelColor)
+      var pixelColor = newColor()
+      for s in 0..<SamplesPerPixel:
+        let u = (i.float + randomFloat()) / (ImageWidth - 1)
+        let v = (j.float + randomFloat()) / (ImageHeight - 1)
+        let r = cam.getRay(u, v)
+        pixelColor += rayColor(r, world)
+      f.writeColor(pixelColor, SamplesPerPixel)
 
   stderr.writeLine(fmt(
     "\e[?25l\e[{StatusMessage.len + 1}G\e[KDone.\e[?25h"

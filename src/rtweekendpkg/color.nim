@@ -1,10 +1,19 @@
 import vec3
 
-proc writeColor*(f: File, pixelColor: Color) =
+proc writeColor*(f: File, pixelColor: Color, samplesPerPixel: int) =
+  var r = pixelColor.x
+  var g = pixelColor.y
+  var b = pixelColor.z
+
+  let scale = 1.0 / samplesPerPixel.float
+  r *= scale
+  g *= scale
+  b *= scale
+
   f.writeLine(
-    (255.999 * pixelColor.x).int,
+    (256 * clamp(r, 0.0, 0.999)).int,
     ' ',
-    (255.999 * pixelColor.y).int,
+    (256 * clamp(g, 0.0, 0.999)).int,
     ' ',
-    (255.999 * pixelColor.z).int,
+    (256 * clamp(b, 0.0, 0.999)).int,
   )

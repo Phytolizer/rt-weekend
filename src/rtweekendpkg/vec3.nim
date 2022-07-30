@@ -30,17 +30,15 @@ proc `[]`*(v: Vec3, i: int): float =
 proc `[]`*(v: var Vec3, i: int): var float =
   v.e[i]
 
-proc `+=`*(v: var Vec3, u: Vec3): var Vec3 =
+proc `+=`*(v: var Vec3, u: Vec3) =
   for i in 0..<3:
     v.e[i] += u.e[i]
-  v
 
-proc `*=`*(v: var Vec3, t: float): var Vec3 =
+proc `*=`*(v: var Vec3, t: float) =
   for i in 0..<3:
     v.e[i] *= t
-  v
 
-proc `/=`*(v: var Vec3, t: float): var Vec3 =
+proc `/=`*(v: var Vec3, t: float) =
   v *= 1 / t
 
 proc lengthSquared*(v: Vec3): float =
