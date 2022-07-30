@@ -12,10 +12,18 @@ import std/options
 import std/sequtils
 import std/strformat
 
-proc rayColor(r: Ray, world: Hittable): Color =
+proc rayColor(r: Ray, world: Hittable, depth: int): Color =
+  if depth == 0:
+    return newColor(0, 0, 0)
+
   let rec = world.hit(r, 0, Infinity)
   if rec.isSome:
-    return 0.5 * (rec.get.normal + newColor(1, 1, 1))
+    let target = rec.get.p + rec.get.normal + vec3.randomInUnitSphere()
+    return 0.5 * rayColor(
+      newRay(rec.get.p, target - rec.get.p),
+      world,
+      depth - 1
+    )
   let unitDirection = r.direction.unitVector
   let t = 0.5 * (unitDirection.y + 1)
   (1 - t) * newColor(1, 1, 1) + t * newColor(0.5, 0.7, 1)
@@ -28,6 +36,7 @@ proc main =
   const ImageWidth = 400
   const ImageHeight = (ImageWidth / AspectRatio).int
   const SamplesPerPixel = 100
+  const MaxDepth = 50
 
   const StatusMessage = "Scanlines remaining: "
 
@@ -54,7 +63,7 @@ proc main =
         let u = (i.float + randomFloat()) / (ImageWidth - 1)
         let v = (j.float + randomFloat()) / (ImageHeight - 1)
         let r = cam.getRay(u, v)
-        pixelColor += rayColor(r, world)
+        pixelColor += rayColor(r, world, MaxDepth)
       f.writeColor(pixelColor, SamplesPerPixel)
 
   stderr.writeLine(fmt(

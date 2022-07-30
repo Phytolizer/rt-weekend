@@ -1,3 +1,5 @@
+import weekend
+
 import std/math
 import std/strformat
 
@@ -77,6 +79,27 @@ proc cross*(u: Vec3, v: Vec3): Vec3 =
 
 proc unitVector*(v: Vec3): Vec3 =
   v / v.length
+
+proc random*: Vec3 =
+  newVec3(
+    randomFloat(),
+    randomFloat(),
+    randomFloat(),
+  )
+
+proc random*(min: float, max: float): Vec3 =
+  newVec3(
+    randomFloat(min, max),
+    randomFloat(min, max),
+    randomFloat(min, max),
+  )
+
+proc randomInUnitSphere*: Vec3 =
+  while true:
+    let p = random(-1.0, 1.0)
+    if p.lengthSquared >= 1:
+      continue
+    return p
 
 type Point3* = Vec3
 
