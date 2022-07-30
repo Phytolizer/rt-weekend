@@ -9,14 +9,14 @@ import std/strformat
 
 proc hitSphere(center: Point3, radius: float, r: Ray): float =
   let oc = r.origin - center
-  let a = dot(r.direction, r.direction)
-  let b = 2 * dot(oc, r.direction)
-  let c = dot(oc, oc) - radius * radius
-  let discriminant = b * b - 4 * a * c
+  let a = r.direction.lengthSquared
+  let halfB = oc.dot(r.direction)
+  let c = oc.lengthSquared - radius * radius
+  let discriminant = halfB * halfB - a * c
   if discriminant < 0:
     -1.0
   else:
-    (-b - sqrt(discriminant)) / (2 * a)
+    (-halfB - sqrt(discriminant)) / a
 
 
 proc rayColor(r: Ray): Color =
