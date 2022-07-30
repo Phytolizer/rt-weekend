@@ -4,15 +4,13 @@ import std/strformat
 type Vec3* = object
   e: array[3, float]
 
-proc newVec3*: Vec3 =
-  Vec3(
-    e: [0.0, 0.0, 0.0]
-  )
-
 proc newVec3*(x: float, y: float, z: float): Vec3 =
   Vec3(
     e: [x, y, z]
   )
+
+proc newVec3*: Vec3 =
+  newVec3(0.0, 0.0, 0.0)
 
 proc x*(v: Vec3): float =
   v.e[0]
@@ -84,10 +82,16 @@ proc unitVector*(v: Vec3): Vec3 =
 
 type Point3* = Vec3
 
+proc newPoint3*: Point3 =
+  newVec3()
+
 proc newPoint3*(x: float, y: float, z: float): Point3 =
   newVec3(x, y, z)
 
 type Color* = Vec3
+
+proc newColor*: Color =
+  newVec3()
 
 proc newColor*(x: float, y: float, z: float): Color =
   newVec3(x, y, z)
