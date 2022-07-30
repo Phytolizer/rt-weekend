@@ -47,7 +47,7 @@ proc lengthSquared*(v: Vec3): float =
   v.x * v.x + v.y * v.y + v.z * v.z
 
 proc length*(v: Vec3): float =
-  sqrt(v.lengthSquared)
+  v.lengthSquared.sqrt
 
 proc `$`*(v: Vec3): string =
   fmt"{v.x} {v.y} {v.z}"
