@@ -1,3 +1,6 @@
+import rtweekendpkg/color
+import rtweekendpkg/vec3
+
 import std/algorithm
 import std/sequtils
 import std/strformat
@@ -23,15 +26,12 @@ proc main =
     ))
     stderr.flushFile()
     for i in 0..<ImageWidth:
-      let r = i.float / (ImageWidth - 1)
-      let g = j.float / (ImageHeight - 1)
-      let b = 0.25
-
-      let ir = (255.999 * r).int
-      let ig = (255.999 * g).int
-      let ib = (255.999 * b).int
-
-      f.writeLine(fmt"{ir} {ig} {ib}")
+      let pixelColor = newColor(
+        float(i) / (ImageWidth - 1),
+        float(j) / (ImageHeight - 1),
+        0.25,
+      )
+      f.writeColor(pixelColor)
 
   stderr.writeLine(fmt(
     "\e[?25l\e[{StatusMessage.len + 1}G\e[KDone.\e[?25h"
