@@ -101,6 +101,9 @@ proc randomInUnitSphere*: Vec3 =
       continue
     return p
 
+proc randomUnitVector*: Vec3 =
+  randomInUnitSphere().unitVector
+
 type Point3* = Vec3
 
 proc newPoint3*: Point3 =
