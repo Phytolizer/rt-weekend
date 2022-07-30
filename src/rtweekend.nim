@@ -3,22 +3,29 @@ import rtweekendpkg/ray
 import rtweekendpkg/vec3
 
 import std/algorithm
+import std/math
 import std/sequtils
 import std/strformat
 
-proc hitSphere(center: Point3, radius: float, r: Ray): bool =
+proc hitSphere(center: Point3, radius: float, r: Ray): float =
   let oc = r.origin - center
   let a = dot(r.direction, r.direction)
   let b = 2 * dot(oc, r.direction)
   let c = dot(oc, oc) - radius * radius
   let discriminant = b * b - 4 * a * c
-  discriminant > 0
+  if discriminant < 0:
+    -1.0
+  else:
+    (-b - sqrt(discriminant)) / (2 * a)
+
 
 proc rayColor(r: Ray): Color =
-  if hitSphere(newPoint3(0, 0, -1), 0.5, r):
-    return newColor(1, 0, 0)
+  var t = hitSphere(newPoint3(0, 0, -1), 0.5, r)
+  if t > 0:
+    let n = (r.at(t) - newVec3(0, 0, -1)).unitVector
+    return 0.5 * newColor(n.x + 1, n.y + 1, n.z + 1)
   let unitDirection = r.direction.unitVector
-  let t = 0.5 * (unitDirection.y + 1)
+  t = 0.5 * (unitDirection.y + 1)
   (1 - t) * newColor(1, 1, 1) + t * newColor(0.5, 0.7, 1)
 
 proc main =
