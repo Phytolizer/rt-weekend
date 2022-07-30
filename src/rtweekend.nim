@@ -6,7 +6,17 @@ import std/algorithm
 import std/sequtils
 import std/strformat
 
+proc hitSphere(center: Point3, radius: float, r: Ray): bool =
+  let oc = r.origin - center
+  let a = dot(r.direction, r.direction)
+  let b = 2 * dot(oc, r.direction)
+  let c = dot(oc, oc) - radius * radius
+  let discriminant = b * b - 4 * a * c
+  discriminant > 0
+
 proc rayColor(r: Ray): Color =
+  if hitSphere(newPoint3(0, 0, -1), 0.5, r):
+    return newColor(1, 0, 0)
   let unitDirection = r.direction.unitVector
   let t = 0.5 * (unitDirection.y + 1)
   (1 - t) * newColor(1, 1, 1) + t * newColor(0.5, 0.7, 1)
