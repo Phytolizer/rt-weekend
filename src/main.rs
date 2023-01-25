@@ -1,14 +1,23 @@
 #![allow(dead_code)]
 
-use std::io::{stderr, stdout, Write};
+use std::{
+    fs::File,
+    io::{stderr, Write},
+    rc::Rc,
+};
 
+use hittable::Hittable;
+use hittable_list::HittableList;
 use ray::Ray;
-use vec3::{dot, Point3, Vec3};
+use vec3::{Point3, Vec3};
 
-use crate::{color::write_color, vec3::Color};
+use crate::{color::write_color, sphere::Sphere, vec3::Color};
 
 mod color;
+mod hittable;
+mod hittable_list;
 mod ray;
+mod sphere;
 mod vec3;
 
 const ASPECT_RATIO: f64 = 16.0 / 9.0;
@@ -23,24 +32,9 @@ const VERTICAL: Vec3 = Vec3::new(0.0, VIEWPORT_HEIGHT, 0.0);
 const PROGRESS_MESSAGE: &str = "Scanlines remaining: ";
 const PROGRESS_MSG_SIZE: usize = PROGRESS_MESSAGE.len() + 1;
 
-fn hit_sphere(center: &Point3, radius: f64, r: &Ray) -> f64 {
-    let oc = *r.origin() - *center;
-    let a = r.direction().length_squared();
-    let half_b = dot(&oc, r.direction());
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-    if discriminant < 0.0 {
-        -1.0
-    } else {
-        (-half_b - discriminant.sqrt()) / a
-    }
-}
-
-fn ray_color(r: &Ray) -> Color {
-    let t = hit_sphere(&Point3::new(0.0, 0.0, -1.0), 0.5, r);
-    if t > 0.0 {
-        let n = (r.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
-        return 0.5 * Color::new(n.x() + 1.0, n.y() + 1.0, n.z() + 1.0);
+fn ray_color(r: &Ray, world: &HittableList) -> Color {
+    if let Some(rec) = world.hit(r, 0.0, f64::INFINITY) {
+        return 0.5 * (rec.normal + Color::new(1.0, 1.0, 1.0));
     }
     let unit_direction = r.direction().unit_vector();
     let t = 0.5 * (unit_direction.y() + 1.0);
@@ -50,9 +44,22 @@ fn ray_color(r: &Ray) -> Color {
 fn main() {
     let lower_left_corner =
         ORIGIN - HORIZONTAL / 2.0 - VERTICAL / 2.0 - Vec3::new(0.0, 0.0, FOCAL_LENGTH);
-    println!("P3");
-    println!("{IMAGE_WIDTH} {IMAGE_HEIGHT}");
-    println!("255");
+
+    let args = std::env::args().collect::<Vec<_>>();
+    let out_path = if args.len() == 1 {
+        "image.ppm"
+    } else {
+        &args[1]
+    };
+    let mut out_file = File::create(out_path).unwrap();
+
+    let mut world = HittableList::new();
+    world.add(Rc::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Rc::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
+
+    writeln!(out_file, "P3").unwrap();
+    writeln!(out_file, "{IMAGE_WIDTH} {IMAGE_HEIGHT}").unwrap();
+    writeln!(out_file, "255").unwrap();
     eprint!("{PROGRESS_MESSAGE}");
 
     for j in (0..IMAGE_HEIGHT).rev() {
@@ -65,8 +72,8 @@ fn main() {
                 ORIGIN,
                 lower_left_corner + u * HORIZONTAL + v * VERTICAL - ORIGIN,
             );
-            let pixel_color = ray_color(&r);
-            write_color(&mut stdout(), &pixel_color).unwrap();
+            let pixel_color = ray_color(&r, &world);
+            write_color(&mut out_file, &pixel_color).unwrap();
         }
     }
 
